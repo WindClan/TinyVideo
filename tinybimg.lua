@@ -50,7 +50,12 @@ local function getHeaderValue(file)
 	return header
 end
 function m:decode(fileName)
-	local file = io.open(fileName,"r")
+	local file
+	if type(fileName) == "string" then
+		file = io.open(fileName,"r")
+	else
+		file = fileName
+	end	
 	local ver = getHeaderValue(file)
 	if ver ~= header then
 		error("File is not a valid TinyBIMG!",0)
