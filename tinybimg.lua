@@ -40,7 +40,7 @@ local function getHeaderValue(file)
 	local lastCharWasEnd = false
 	local header = ""
 	while not endOfHeader do
-		local byte = file:read(1)
+		local byte = file.read(1)
 		if byte == "\00" then
 			endOfHeader = true
 		else
@@ -77,9 +77,9 @@ function m:decode(fileName)
 			bimg[currentFrame] = {}
 		end
 		bimg[currentFrame][currentLine] = {
-			file:read(charsPerLine),
-			file:read(charsPerLine),
-			file:read(charsPerLine)
+			file.read(charsPerLine),
+			file.read(charsPerLine),
+			file.read(charsPerLine)
 		}
 		if bimg[currentFrame][currentLine] == {nil,nil,nil} then
 			bimg[currentFrame][currentLine] = nil
@@ -87,7 +87,7 @@ function m:decode(fileName)
 		currentLine = currentLine + 1
 		currentCharacter = currentCharacter + charsPerLine*3
 	end
-	file:close()
+	file.close()
 	return bimg
 end
 return m
