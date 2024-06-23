@@ -1,5 +1,0 @@
-local video = require("video1")
-local tinyvideo = require("tinyvideo")
-local file = io.open("video.tinyvideo","w")
-file:write(tinyvideo:encode(video,io.open("left.dfpwm","rb"),io.open("right.dfpwm","rb"),6))
-file:close()

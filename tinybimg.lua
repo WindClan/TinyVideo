@@ -52,7 +52,7 @@ end
 function m:decode(fileName)
 	local file
 	if type(fileName) == "string" then
-		file = io.open(fileName,"r")
+		file = fs.open(fileName,"r")
 	else
 		file = fileName
 	end	
