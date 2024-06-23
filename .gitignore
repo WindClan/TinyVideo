@@ -1,0 +1,7 @@
+test/extractAudio/*
+test/sanjuuni-ui-Win64/*
+test/*.dfpwm
+test/*.tinybimg
+test/*.tinyvideo
+test/video.lua
+test/video1.lua
