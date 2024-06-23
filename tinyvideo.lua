@@ -1,8 +1,28 @@
+--[[
+	Copyright 2024 WindClan
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy of
+	this software and associated documentation files (the “Software”), to deal in
+	the Software without restriction, including without limitation the rights to use,
+	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+	Software, and to permit persons to whom the Software is furnished to do so,
+	subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND,
+	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+	OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+	NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+	OTHER DEALINGS IN THE SOFTWARE.
+]]
 local header = "TinyVideo"
-local isComputerCraft = colors and true or false
 local secondOfDfpwm = 6000
 local m = {}
-
 function m:encode(video,leftDfpwmHandle,rightDfpwmHandle,fps)
 	print("encode start")
 	local str = ""
@@ -36,7 +56,6 @@ function m:encode(video,leftDfpwmHandle,rightDfpwmHandle,fps)
 		end
 	end
 	local meta = header.."\00"..#str.."\00"..charsPerLine.."\00"..linesPerFrame.."\00"..#video.."\00"..fps.."\00"..bytesOfDfpwm.."\00"
-	--local meta = header.."\00"..string.pack(">LI2I2I2",#str,charsPerLine,linesPerFrame,#video)
 	local encoded = meta..str
 	print(#str,encoderCharsPerLine,encoderLinesPerFrame,#video,fps,bytesOfDfpwm)
 	leftDfpwmHandle:close()
@@ -56,7 +75,6 @@ local function getHeaderValue(file)
 			header = header..byte
 		end
 	end
-	
 	return header
 end
 function m:decode(fileName)
@@ -92,8 +110,6 @@ function m:decode(fileName)
 		}
 	end
 	file:close()
-	
 	return data
 end
-
 return m
