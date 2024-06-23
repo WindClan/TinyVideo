@@ -1,0 +1,5 @@
+local video = require("video1")
+local tinyvideo = require("tinyvideo")
+local file = fs.open("video.tinyvideo","w")
+file.write(tinyvideo:encode(video,fs.open("left.dfpwm","rb"),fs.open("right.dfpwm","rb"),6))
+file.close()
