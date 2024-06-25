@@ -22,7 +22,7 @@
 ]]
 local header = "TinyBIMG"
 local m = {}
-function m:encode(video)
+function m:encode(video,palette,...)
 	local str = ""
 	for frameNum,frame in ipairs(video) do
 		for lineNum,line in ipairs(frame) do
@@ -31,8 +31,21 @@ function m:encode(video)
 	end
 	charsPerLine = #video[1][1][1]
 	linesPerFrame = #video[1]
-	local meta = header.."\00"..#str.."\00"..charsPerLine.."\00"..linesPerFrame.."\00"..#video.."\00"
-	local encoded = meta..str
+	local header1 = header
+	local meta = "\00"..#str.."\00"..charsPerLine.."\00"..linesPerFrame.."\00"..#video.."\00"
+	if palette then
+		ver = ver + 1
+		--palette hasn't been implemented yet so idk, maybe store the colors as hex values?
+	end
+	local optional = {...}
+	for i,v in pairs(optional) do
+		ver = ver + 1
+		local meta = meta..v.."\00"
+	end
+	if ver ~= 0 then
+		header1 = header1..ver
+	end
+	local encoded =header1.. meta..str
 	return encoded
 end
 local function getHeaderValue(file)
@@ -49,6 +62,16 @@ local function getHeaderValue(file)
 	end
 	return header
 end
+local function getVariant(file)
+	local ver = getHeaderValue(file)
+	if #ver < #header or ver:sub(1,#header) ~= header then
+		return nil -- not a valid tinybimg file
+	end
+	if ver == header then
+		return 0
+	end
+	return tonumber(ver:sub(#header+1,#ver))
+end
 function m:decode(fileName)
 	local file
 	if type(fileName) == "string" then
@@ -56,15 +79,29 @@ function m:decode(fileName)
 	else
 		file = fileName
 	end	
-	local ver = getHeaderValue(file)
-	if ver ~= header then
+	
+	local ver = getVariant(file)
+	if not ver then
 		error("File is not a valid TinyBIMG!",0)
 	end
 	local strLength = tonumber(getHeaderValue(file))
 	local charsPerLine = tonumber(getHeaderValue(file))
 	local linesPerFrame = tonumber(getHeaderValue(file))
 	local numberOfFrames = tonumber(getHeaderValue(file))
-	local bimg = {}
+	local extra = {}
+	local palette
+	if ver > 0 then
+		palette = getHeaderValue(file)--todo: decode this
+	end
+	if ver > 1 then
+		for i=1,ver do
+			extra[i] = getHeaderValue(file)
+		end
+	end
+	local bimg = {
+		extra = extra,
+		palette = palette
+	}
 	local currentLine = 1
 	local currentFrame = 1
 	local currentCharacter = 0
