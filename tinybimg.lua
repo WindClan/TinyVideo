@@ -35,6 +35,7 @@ function m:encode(video,palette,...)
 	local meta = "\00"..#str.."\00"..charsPerLine.."\00"..linesPerFrame.."\00"..#video.."\00"
 	if palette then
 		ver = ver + 1
+		error("Not implemented.",0)
 		--palette hasn't been implemented yet so idk, maybe store the colors as hex values?
 	end
 	local optional = {...}
