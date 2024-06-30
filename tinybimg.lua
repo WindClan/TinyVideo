@@ -22,7 +22,7 @@
 ]]
 local header = "TinyBIMG"
 local m = {}
-function m:encode(video,palette,...)
+function m:encode(video,...)
 	local str = ""
 	for frameNum,frame in ipairs(video) do
 		for lineNum,line in ipairs(frame) do
@@ -33,11 +33,6 @@ function m:encode(video,palette,...)
 	linesPerFrame = #video[1]
 	local header1 = header
 	local meta = "\00"..#str.."\00"..charsPerLine.."\00"..linesPerFrame.."\00"..#video.."\00"
-	if palette then
-		ver = ver + 1
-		error("Not implemented.",0)
-		--palette hasn't been implemented yet so idk, maybe store the colors as hex values?
-	end
 	local optional = {...}
 	for i,v in pairs(optional) do
 		ver = ver + 1
@@ -92,9 +87,6 @@ function m:decode(fileName)
 	local extra = {}
 	local palette
 	if ver > 0 then
-		palette = getHeaderValue(file)--todo: decode this
-	end
-	if ver > 1 then
 		for i=1,ver do
 			extra[i] = getHeaderValue(file)
 		end
