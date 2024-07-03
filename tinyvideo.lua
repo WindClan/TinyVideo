@@ -23,7 +23,33 @@
 local header = "TinyVideo"
 local secondOfDfpwm = 6000
 local m = {}
-function m:encode(video,leftDfpwmHandle,rightDfpwmHandle,fps,palette,...)
+
+local function getHeaderValue(file)
+	local endOfHeader = false
+	local lastCharWasEnd = false
+	local header = ""
+	while not endOfHeader do
+		local byte = file.read(1)
+		if byte == "\00" then
+			endOfHeader = true
+		else
+			header = header..byte
+		end
+	end
+	return header
+end
+local function getVariant(file)
+	local ver = getHeaderValue(file)
+	if #ver < #header or ver:sub(1,#header) ~= header then
+		return nil -- not a valid tinyvideo file
+	end
+	if ver == header then
+		return 0
+	end
+	return tonumber(ver:sub(#header+1,#ver))
+end
+
+function m:encode(video,leftDfpwmHandle,rightDfpwmHandle,fps,...)
 	print("encode start")
 	local str = ""
 	local ver = 0
@@ -58,11 +84,6 @@ function m:encode(video,leftDfpwmHandle,rightDfpwmHandle,fps,palette,...)
 	end
 	local header1 = header
 	local meta = "\00"..#str.."\00"..charsPerLine.."\00"..linesPerFrame.."\00"..#video.."\00"..fps.."\00"..bytesOfDfpwm.."\00"
-	if palette then
-		ver = ver + 1
-		error("Not implemented.",0)
-		--palette hasn't been implemented yet so idk, maybe store the colors as hex values?
-	end
 	local optional = {...}
 	for i,v in pairs(optional) do
 		ver = ver + 1
@@ -78,30 +99,7 @@ function m:encode(video,leftDfpwmHandle,rightDfpwmHandle,fps,palette,...)
 	print("encode stop")
 	return encoded
 end
-local function getHeaderValue(file)
-	local endOfHeader = false
-	local lastCharWasEnd = false
-	local header = ""
-	while not endOfHeader do
-		local byte = file.read(1)
-		if byte == "\00" then
-			endOfHeader = true
-		else
-			header = header..byte
-		end
-	end
-	return header
-end
-local function getVariant(file)
-	local ver = getHeaderValue(file)
-	if #ver < #header or ver:sub(1,#header) ~= header then
-		return nil -- not a valid tinyvideo file
-	end
-	if ver == header then
-		return 0
-	end
-	return tonumber(ver:sub(#header+1,#ver))
-end
+
 function m:decode(fileName)
 	local file
 	if type(fileName) == "string" then
@@ -120,11 +118,7 @@ function m:decode(fileName)
 	local frameRate = tonumber(getHeaderValue(file))
 	local bytesOfDfpwm = tonumber(getHeaderValue(file))
 	local extra = {}
-	local palette
 	if ver > 0 then
-		palette = getHeaderValue(file)--todo: decode this
-	end
-	if ver > 1 then
 		for i=1,ver do
 			extra[i] = getHeaderValue(file)
 		end

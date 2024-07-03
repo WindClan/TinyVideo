@@ -6,5 +6,5 @@ ffmpeg -i right.wav -ar 48k -ac 1 -c:a dfpwm right.dfpwm
 rm left.wav
 rm right.wav
 
-rm input.wav
+#rm input.wav
 rm audio.aac

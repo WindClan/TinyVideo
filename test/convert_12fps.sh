@@ -1,4 +1,4 @@
-ffmpeg -y -i  videoplayback.mp4 -vf "scale=114:114,setsar=1" -ar 48k -r 6 output.mp4
+ffmpeg -y -i  videoplayback.mp4 -vf "scale=114:114,setsar=1" -ar 48k -r 12 output.mp4
 rm audio.aac
 ffmpeg -i output.mp4 -vn -acodec copy audio.aac
 rm input.wav
